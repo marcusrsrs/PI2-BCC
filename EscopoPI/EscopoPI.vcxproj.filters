@@ -29,5 +29,8 @@
     <Image Include="MEN.png">
       <Filter>Arquivos de Recurso</Filter>
     </Image>
+    <Image Include="inicial.png">
+      <Filter>Arquivos de Recurso</Filter>
+    </Image>
   </ItemGroup>
 </Project>
