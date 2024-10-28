@@ -32,5 +32,11 @@
     <Image Include="inicial.png">
       <Filter>Arquivos de Recurso</Filter>
     </Image>
+    <Image Include="pop-up1.png">
+      <Filter>Arquivos de Recurso</Filter>
+    </Image>
+    <Image Include="pop-up2.png">
+      <Filter>Arquivos de Recurso</Filter>
+    </Image>
   </ItemGroup>
 </Project>

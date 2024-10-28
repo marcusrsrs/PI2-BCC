@@ -4,120 +4,177 @@
 #include <allegro5/allegro_ttf.h>
 #include <allegro5/allegro_image.h>
 #include <allegro5/keyboard.h>
-
 //  573 / 3 = 191 → largura
 // 644 / 4 = 161  → altura
 
 // Definindo os estados do jogo
 typedef enum {
-    TELA_INICIAL,
-    TELA_JOGO
+    TELA_INICIAL,  // Estado da tela inicial
+    TELA_JOGO,     // Estado do jogo
+    TELA_POPUP1,   // Estado do primeiro pop-up
+    TELA_POPUP2    // Estado do segundo pop-up
 } EstadoJogo;
 
 int main() {
+    // Inicialização dos componentes do Allegro
     al_init();
     al_init_font_addon();
     al_init_ttf_addon();
     al_init_image_addon();
     al_install_keyboard();
-    //iniciando as funções declaradas antes da main
 
-    ALLEGRO_DISPLAY* display = al_create_display(1200, 673); //criando a janela e utilizando o al_create para as dimensoes
-    al_set_window_position(display, 300, 150); //onde a janela vai ser aberta
-    al_set_window_title(display, "Where's princess?!"); //definindo o título do programa
+    // Criando a tela de exibição
+    ALLEGRO_DISPLAY* display = al_create_display(1200, 673);
+    al_set_window_position(display, 300, 150);
+    al_set_window_title(display, "Where is the princess?!");
 
-    ALLEGRO_FONT* font = al_create_builtin_font(); //utilizando fonte padrão do allegro
-    ALLEGRO_TIMER* timer = al_create_timer(1.0 / 40.0); // 40 FPS para maior fluidez -- define a velocidade da troca de frames (imagens) do boneco
+    // Criando a fonte e o timer
+    ALLEGRO_FONT* font = al_create_builtin_font();
+    ALLEGRO_TIMER* timer = al_create_timer(1.0 / 40.0); // 40 FPS
 
-    ALLEGRO_BITMAP* sprite = al_load_bitmap("./MEN.png"); //ponteiro para a imagem da sprite
-    ALLEGRO_BITMAP* bg = al_load_bitmap("./bg.png");  //ponteiro para a imagem de fundo
-    ALLEGRO_BITMAP* inicial = al_load_bitmap("./inicial.png"); //ponteiro para a imagem de fundo da tela inicial
+    // Carregando as imagens necessárias
+    ALLEGRO_BITMAP* sprite = al_load_bitmap("./MEN.png"); // Imagem do personagem
+    ALLEGRO_BITMAP* bg = al_load_bitmap("./bg.png");       // Imagem de fundo
+    ALLEGRO_BITMAP* inicial = al_load_bitmap("./inicial.png"); // Imagem da tela inicial
+    ALLEGRO_BITMAP* popup_img1 = al_load_bitmap("./pop-up1.png"); // Imagem do pop-up 1
+    ALLEGRO_BITMAP* popup_img2 = al_load_bitmap("./pop-up2.png"); // Imagem do pop-up 2
 
-
+    // Criando a fila de eventos
     ALLEGRO_EVENT_QUEUE* event_queue = al_create_event_queue();
     al_register_event_source(event_queue, al_get_display_event_source(display));
     al_register_event_source(event_queue, al_get_timer_event_source(timer));
     al_register_event_source(event_queue, al_get_keyboard_event_source());
-    al_start_timer(timer);
+    al_start_timer(timer); // Iniciando o timer
 
-    float frame = 0.f;
-    int pos_x = 115, pos_y = 50; //início da posição do personagem principal
-    int current_frame_y = 64;
+    // Variáveis para controle do jogo
+    float frame = 0.f; // Contador de quadros
+    int pos_x = 115, pos_y = 50; // Posição inicial do personagem
+    int current_frame_y = 64; // Posição vertical do sprite
 
-    EstadoJogo estadoAtual = TELA_INICIAL;  // Começamos na tela inicial
-    ALLEGRO_KEYBOARD_STATE keyState;        // Armazenar o estado do teclado
+    // Definindo os limites da tela de jogo (background)
+    int lim_esquerdo = 0;
+    int lim_direito = 1200 - 48; // largura da tela menos largura do sprite
+    int lim_superior = 0;
+    int lim_inferior = 673 - 64; // altura da tela menos altura do sprite
+
+    EstadoJogo estadoAtual = TELA_INICIAL; // Estado inicial do jogo
+    ALLEGRO_KEYBOARD_STATE keyState; // Estado do teclado
 
     while (true) {
         ALLEGRO_EVENT event;
-        al_wait_for_event(event_queue, &event);
+        al_wait_for_event(event_queue, &event); // Aguardando eventos
 
+        // Verifica se a janela foi fechada
         if (event.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
-            break;
-        } //checando se ele clicou no clicou no X da página
+            break; // Sai do loop principal
+        }
 
+        // Lógica para a tela inicial
         if (estadoAtual == TELA_INICIAL) {
-            // Lógica da tela inicial
             if (event.type == ALLEGRO_EVENT_KEY_DOWN) {
                 if (event.keyboard.keycode == ALLEGRO_KEY_ENTER) {
-                    estadoAtual = TELA_JOGO;  // Vai para o estado de jogo
+                    estadoAtual = TELA_JOGO; // Muda para o estado do jogo
                 }
             }
-
-            // Desenhar a tela inicial
-            al_draw_bitmap(inicial, 0, 0, 0); //desenhando o fundo da tela inicial
-            al_draw_text(font, al_map_rgb(255, 255, 255), 600, 300, ALLEGRO_ALIGN_CENTER, "Pressione ENTER para iniciar o jogo");
-
-            al_flip_display();
-
+            al_draw_bitmap(inicial, 0, 0, 0); // Desenha a imagem da tela inicial
+            //al_draw_text(font, al_map_rgb(255, 255, 255), 600, 300, ALLEGRO_ALIGN_CENTER, "Pressione ENTER para iniciar o jogo");
+            al_flip_display(); // Atualiza a tela
         }
+        // Lógica para o jogo
         else if (estadoAtual == TELA_JOGO) {
-            // Lógica da tela de jogo
             if (event.type == ALLEGRO_EVENT_TIMER) {
-                // Atualizando o estado do teclado
-                al_get_keyboard_state(&keyState);
+                al_get_keyboard_state(&keyState); // Obtém o estado do teclado
 
-                // Movimentação do personagem
-                if (al_key_down(&keyState, ALLEGRO_KEY_RIGHT)) {
+                // Movimentação do personagem com limites
+                if (al_key_down(&keyState, ALLEGRO_KEY_RIGHT) && pos_x < lim_direito) {
                     current_frame_y = 64;
                     pos_x += 2;
                 }
-                if (al_key_down(&keyState, ALLEGRO_KEY_LEFT)) {
+                if (al_key_down(&keyState, ALLEGRO_KEY_LEFT) && pos_x > lim_esquerdo) {
                     current_frame_y = 64 * 3;
                     pos_x -= 2;
                 }
-                if (al_key_down(&keyState, ALLEGRO_KEY_DOWN)) {
+                if (al_key_down(&keyState, ALLEGRO_KEY_DOWN) && pos_y < lim_inferior) {
                     current_frame_y = 64 * 2;
                     pos_y += 2;
                 }
-                if (al_key_down(&keyState, ALLEGRO_KEY_UP)) {
+                if (al_key_down(&keyState, ALLEGRO_KEY_UP) && pos_y > lim_superior) {
                     current_frame_y = 0;
                     pos_y -= 2;
                 }
 
-                frame += 0.3f;
+                // Controle do frame do sprite
+                frame += 0.3f; // Incrementa o contador de quadros
                 if (frame > 3) {
-                    frame -= 3;
-                }  // animação para ir alterando entre as imagens da linha do sprite
+                    frame -= 3; // Reinicia o contador se exceder
+                }
 
-                // Desenhar o jogo
+                // Verifica a posição do personagem para mudar o estado para pop-up
+                if (pos_x >= 575 && pos_y == 50) {
+                    estadoAtual = TELA_POPUP1; // Muda para o primeiro pop-up
+                }
+                if (pos_x >= 1120 && pos_y == 570) {
+                    estadoAtual = TELA_POPUP2; // Muda para o segundo pop-up
+                }
+
+                // Limpa a tela e desenha o fundo e o personagem
                 al_clear_to_color(al_map_rgb(255, 255, 255));
-                al_draw_bitmap(bg, 0, 0, 0); //desenhando o bg
-                //al_draw_text(font, al_map_rgb(0, 0, 0), 7, 7, 0, "SCORE: dragon");
-                al_draw_text(font, al_map_rgb(255, 255, 255), 5, 5, 0, "SCORE: dragon"); //criando um texto e o local
-                al_draw_bitmap_region(sprite, 48 * (int)frame, current_frame_y, 48, 64, pos_x, pos_y, 0); //desenhando cada região do sprite
+                al_draw_bitmap(bg, 0, 0, 0); // Desenha o fundo
+                al_draw_text(font, al_map_rgb(255, 255, 255), 5, 5, 0, "SCORE: dragão"); // Exibe a pontuação
+                al_draw_bitmap_region(sprite, 48 * (int)frame, current_frame_y, 48, 64, pos_x, pos_y, 0); // Desenha o sprite do personagem
+                al_flip_display(); // Atualiza a tela
+            }
+        }
+        // Lógica para o primeiro pop-up
+        else if (estadoAtual == TELA_POPUP1) {
+            // Desenhar a imagem do pop-up 1
+            al_draw_bitmap(bg, 0, 0, 0); // Desenha o fundo
+            al_draw_bitmap(popup_img1, 400, 200, 0); // Posição centralizada para o pop-up 1
 
-                al_flip_display();
+            al_flip_display(); // Atualiza a tela
+
+            // Verifica se o usuário quer sair do pop-up 1
+            if (event.type == ALLEGRO_EVENT_KEY_DOWN) {
+                if (event.keyboard.keycode == ALLEGRO_KEY_ESCAPE) {
+                    estadoAtual = TELA_JOGO; // Retorna ao estado do jogo
+                }
+            }
+        }
+        // Lógica para o segundo pop-up
+        else if (estadoAtual == TELA_POPUP2) {
+            // Desenhar a imagem do pop-up 2
+            al_draw_bitmap(bg, 0, 0, 0); // Desenha o fundo
+            al_draw_bitmap(popup_img2, 0, 0, 0); // Posição centralizada para o pop-up 2
+
+            al_flip_display(); // Atualiza a tela
+
+            // Verifica se o usuário quer sair do pop-up 2
+            if (event.type == ALLEGRO_EVENT_KEY_DOWN) {
+                if (event.keyboard.keycode == ALLEGRO_KEY_ESCAPE) {
+                    estadoAtual = TELA_JOGO; // Retorna ao estado do jogo
+                }
             }
         }
     }
 
-    // Destruindo os recursos
+    // Liberação dos recursos utilizados
     al_destroy_bitmap(bg);
     al_destroy_bitmap(sprite);
     al_destroy_font(font);
     al_destroy_display(display);
     al_destroy_bitmap(inicial);
+    al_destroy_bitmap(popup_img1);
+    al_destroy_bitmap(popup_img2);
     al_destroy_event_queue(event_queue);
 
-    return 0;
+    return 0; 
 }
+
+
+
+
+
+
+
+
+
