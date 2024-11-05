@@ -4,8 +4,6 @@
 #include <allegro5/allegro_ttf.h>
 #include <allegro5/allegro_image.h>
 #include <allegro5/keyboard.h>
-//  573 / 3 = 191 → largura
-// 644 / 4 = 161  → altura
 
 // Definindo os estados do jogo
 typedef enum {
@@ -14,6 +12,19 @@ typedef enum {
     TELA_POPUP1,   // Estado do primeiro pop-up
     TELA_POPUP2    // Estado do segundo pop-up
 } EstadoJogo;
+
+void reiniciarTelaJogo(ALLEGRO_BITMAP* bg, ALLEGRO_BITMAP* sprite, ALLEGRO_FONT* font, ALLEGRO_DISPLAY* display, int* pos_x, int* pos_y, float* frame) {
+    // Reinicia as variáveis do jogo
+    *pos_x = 650;
+    *pos_y = 50;
+    *frame = 0;
+
+    // Limpa a tela e redesenha o fundo
+    al_clear_to_color(al_map_rgb(255, 255, 255));
+    al_draw_bitmap(bg, 0, 0, 0); // Desenha o fundo
+    al_draw_text(font, al_map_rgb(255, 255, 255), 5, 5, 0, "SCORE: dragão"); // Exibe a pontuação
+    al_flip_display(); // Atualiza a tela
+}
 
 int main() {
     // Inicialização dos componentes do Allegro
@@ -77,7 +88,6 @@ int main() {
                 }
             }
             al_draw_bitmap(inicial, 0, 0, 0); // Desenha a imagem da tela inicial
-            //al_draw_text(font, al_map_rgb(255, 255, 255), 600, 300, ALLEGRO_ALIGN_CENTER, "Pressione ENTER para iniciar o jogo");
             al_flip_display(); // Atualiza a tela
         }
         // Lógica para o jogo
@@ -130,12 +140,13 @@ int main() {
             // Desenhar a imagem do pop-up 1
             al_draw_bitmap(bg, 0, 0, 0); // Desenha o fundo
             al_draw_bitmap(popup_img1, 400, 200, 0); // Posição centralizada para o pop-up 1
-
             al_flip_display(); // Atualiza a tela
 
             // Verifica se o usuário quer sair do pop-up 1
             if (event.type == ALLEGRO_EVENT_KEY_DOWN) {
                 if (event.keyboard.keycode == ALLEGRO_KEY_ESCAPE) {
+                    // Destrói recursos e reinicia o jogo
+                    reiniciarTelaJogo(bg, sprite, font, display, &pos_x, &pos_y, &frame);
                     estadoAtual = TELA_JOGO; // Retorna ao estado do jogo
                 }
             }
@@ -145,12 +156,13 @@ int main() {
             // Desenhar a imagem do pop-up 2
             al_draw_bitmap(bg, 0, 0, 0); // Desenha o fundo
             al_draw_bitmap(popup_img2, 0, 0, 0); // Posição centralizada para o pop-up 2
-
             al_flip_display(); // Atualiza a tela
 
             // Verifica se o usuário quer sair do pop-up 2
             if (event.type == ALLEGRO_EVENT_KEY_DOWN) {
                 if (event.keyboard.keycode == ALLEGRO_KEY_ESCAPE) {
+                    // Destrói recursos e reinicia o jogo
+                    reiniciarTelaJogo(bg, sprite, font, display, &pos_x, &pos_y, &frame);
                     estadoAtual = TELA_JOGO; // Retorna ao estado do jogo
                 }
             }
@@ -167,10 +179,8 @@ int main() {
     al_destroy_bitmap(popup_img2);
     al_destroy_event_queue(event_queue);
 
-    return 0; 
+    return 0;
 }
-
-
 
 
 
