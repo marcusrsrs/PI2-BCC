@@ -110,7 +110,7 @@ int main() {
                 }
 
                 // Verifica a posição do personagem para mudar o estado para pop-up
-                if (pos_x >= 575 && pos_y == 50) {
+                if (pos_x == 575 && pos_y == 50) {
                     estadoAtual = TELA_POPUP1; // Muda para o primeiro pop-up
                 }
                 if (pos_x >= 1120 && pos_y == 570) {
