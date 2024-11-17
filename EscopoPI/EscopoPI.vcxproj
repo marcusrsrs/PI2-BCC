@@ -152,6 +152,8 @@
     <Image Include="MEN.png" />
     <Image Include="pop-up1.png" />
     <Image Include="pop-up2.png" />
+    <Image Include="pop-up3.png" />
+    <Image Include="pop-up4.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
