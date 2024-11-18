@@ -236,3 +236,154 @@ int main() {
 
     return 0;
 }
+// aqui no meu computador deu tudo certo, como tem vez que dá errado no senac vou deixar minha parte do minigame comentada 
+//#include <allegro5/allegro.h>
+//#include <allegro5/allegro_font.h>
+//#include <allegro5/allegro_image.h>
+//#include <allegro5/allegro_keyboard.h>
+//#include <stdlib.h>
+//#include <time.h>
+//
+//// Definindo os parâmetros do jogo
+//#define LARGURA_TELA 800
+//#define ALTURA_TELA 600
+//#define SPRITE_LARGURA 64
+//#define SPRITE_ALTURA 64
+//#define VELOCIDADE_CANOS 5
+//#define CANO_LARGURA 80
+//#define ESPACO_ENTRE_CANOS 150
+//
+//typedef struct {
+//    int x, y;
+//    int largura, altura;
+//} Cano;
+//
+//void desenhaCanos(Cano canos[], int quantidade, ALLEGRO_BITMAP* pipe) {
+//    for (int i = 0; i < quantidade; i++) {
+//        al_draw_bitmap(pipe, canos[i].x, canos[i].y, 0);
+//    }
+//}
+//
+//void moveCanos(Cano canos[], int quantidade) {
+//    for (int i = 0; i < quantidade; i++) {
+//        canos[i].x -= VELOCIDADE_CANOS;  // Move os canos para a esquerda
+//        if (canos[i].x + CANO_LARGURA < 0) {
+//            canos[i].x = LARGURA_TELA;
+//            canos[i].y = rand() % (ALTURA_TELA - ESPACO_ENTRE_CANOS);  // Altera a altura do cano
+//        }
+//    }
+//}
+//
+//bool checaColisao(int pos_x, int pos_y, Cano canos[], int quantidade) {
+//    for (int i = 0; i < quantidade; i++) {
+//        if (pos_x + SPRITE_LARGURA > canos[i].x && pos_x < canos[i].x + CANO_LARGURA) {
+//            if (pos_y < canos[i].y || pos_y + SPRITE_ALTURA > canos[i].y + ESPACO_ENTRE_CANOS) {
+//                return true;  // Colisão detectada
+//            }
+//        }
+//    }
+//    return false;
+//}
+//
+//void telaFlappy(ALLEGRO_DISPLAY* display, ALLEGRO_FONT* font, ALLEGRO_BITMAP* bg, ALLEGRO_BITMAP* sprite, ALLEGRO_BITMAP* pipe) {
+//    int pos_x = 300, pos_y = 315;  // Posição inicial do personagem
+//    int score = 0;  // Pontuação do jogador
+//    bool jogoAtivo = true;
+//    ALLEGRO_KEYBOARD_STATE keyState;
+//
+//    // Inicializa os canos
+//    Cano canos[3];
+//    for (int i = 0; i < 3; i++) {
+//        canos[i].x = LARGURA_TELA + i * (LARGURA_TELA / 2);  // Inicializa os canos fora da tela
+//        canos[i].y = rand() % (ALTURA_TELA - ESPACO_ENTRE_CANOS);  // Altura aleatória dos canos
+//        canos[i].largura = CANO_LARGURA;
+//        canos[i].altura = ALTURA_TELA;
+//    }
+//
+//    // Loop do mini-game
+//    while (jogoAtivo) {
+//        al_get_keyboard_state(&keyState);
+//
+//        // Verificar se o jogador pressionou ESC para sair do mini-game
+//        if (al_key_down(&keyState, ALLEGRO_KEY_ESCAPE)) {
+//            jogoAtivo = false;
+//        }
+//
+//        // Movimentação do personagem (subir/descer)
+//        if (al_key_down(&keyState, ALLEGRO_KEY_UP)) {
+//            pos_y -= 2;  // Move para cima
+//        }
+//        if (al_key_down(&keyState, ALLEGRO_KEY_DOWN)) {
+//            pos_y += 2;  // Move para baixo
+//        }
+//
+//        // Garantir que o personagem não saia da tela
+//        if (pos_y < 0) {
+//            pos_y = 0;
+//        }
+//        else if (pos_y + SPRITE_ALTURA > ALTURA_TELA) {
+//            pos_y = ALTURA_TELA - SPRITE_ALTURA;
+//        }
+//
+//        // Movimenta os canos
+//        moveCanos(canos, 3);
+//
+//        // Verifica colisões
+//        if (checaColisao(pos_x, pos_y, canos, 3)) {
+//            jogoAtivo = false;  // Fim de jogo
+//        }
+//
+//        // Limpeza da tela e desenho dos elementos
+//        al_clear_to_color(al_map_rgb(135, 206, 235)); // Fundo azul (céu)
+//        al_draw_bitmap(bg, 0, 0, 0);  // Desenha o fundo
+//        al_draw_bitmap_region(sprite, 0, 0, SPRITE_LARGURA, SPRITE_ALTURA, pos_x, pos_y, 0);  // Desenha o personagem
+//        desenhaCanos(canos, 3, pipe);  // Desenha os canos
+//
+//        // Exibe a pontuação
+//        char scoreText[20];
+//        sprintf(scoreText, "Score: %d", score);
+//        al_draw_text(font, al_map_rgb(255, 255, 255), 10, 10, 0, scoreText);
+//
+//        al_flip_display();  // Atualiza a tela
+//
+//        // Aumenta a pontuação conforme o tempo
+//        score++;
+//
+//        // Aguarda um tempo para dar o efeito de FPS (40 FPS)
+//        al_rest(0.025);
+//    }
+//}
+//
+//int main() {
+//    // Inicializações
+//    al_init();
+//    al_init_font_addon();
+//    al_init_image_addon();
+//    al_install_keyboard();
+//
+//    ALLEGRO_DISPLAY* display = al_create_display(LARGURA_TELA, ALTURA_TELA);
+//    al_set_window_title(display, "Mini-Game Flappy");
+//
+//    ALLEGRO_FONT* font = al_create_builtin_font();
+//    ALLEGRO_BITMAP* sprite = al_load_bitmap("./flappy_bird.png"); // Sprite do personagem
+//    ALLEGRO_BITMAP* bg = al_load_bitmap("./background.png");       // Imagem de fundo
+//    ALLEGRO_BITMAP* pipe = al_load_bitmap("./pipe.png");           // Imagem do cano
+//
+//    if (!sprite || !bg || !pipe) {
+//        printf("Erro ao carregar as imagens!\n");
+//        return -1;
+//    }
+//
+//    // Chama o mini-game
+//    telaFlappy(display, font, bg, sprite, pipe);
+//
+//    // Libera recursos
+//    al_destroy_bitmap(sprite);
+//    al_destroy_bitmap(bg);
+//    al_destroy_bitmap(pipe);
+//    al_destroy_font(font);
+//    al_destroy_display(display);
+//
+//    return 0;
+//}
+
