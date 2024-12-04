@@ -44,5 +44,23 @@
     <Image Include="pop-up4.png">
       <Filter>Arquivos de Recurso</Filter>
     </Image>
+    <Image Include="princesa.png">
+      <Filter>Arquivos de Recurso</Filter>
+    </Image>
+    <Image Include="rei.png">
+      <Filter>Arquivos de Recurso</Filter>
+    </Image>
+    <Image Include="surpresa1.png">
+      <Filter>Arquivos de Recurso</Filter>
+    </Image>
+    <Image Include="background.png">
+      <Filter>Arquivos de Recurso</Filter>
+    </Image>
+    <Image Include="flappy.png">
+      <Filter>Arquivos de Recurso</Filter>
+    </Image>
+    <Image Include="pipe.png">
+      <Filter>Arquivos de Recurso</Filter>
+    </Image>
   </ItemGroup>
 </Project>

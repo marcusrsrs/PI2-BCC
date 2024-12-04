@@ -1,4 +1,13 @@
-﻿#include <allegro5/allegro.h>
+﻿
+
+
+
+//                          O CÓDIGO ABAIXO É O CÓDIGO PRINCIPAL COM TODAS AS INTERAÇÕES FUNCIONANDO, EXCETO NA TORRE EIFFEL E NA ESTÁTUA DA LIBERDADE
+//                                               NÃO CONSEGUI FAZER O CÓDIGO PRINCIPAL CHAMAR O CÓDIGO DO MINIGAME
+
+
+
+#include <allegro5/allegro.h>
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_ttf.h>
 #include <allegro5/allegro_image.h>
@@ -9,6 +18,7 @@ typedef enum {
     TELA_INICIAL,  // Estado da tela inicial
     TELA_JOGO,     // Estado do jogo
     TELA_POPUP1,   // Estado do primeiro pop-up
+    TELA_SURPRESA1,   // Estado do primeiro pop-up
     TELA_POPUP3,    // Estado do terceiro pop-up
     TELA_POPUP4,    // Estado do quarto pop-up
     TELA_FINAL    // Estado da tela final
@@ -24,7 +34,19 @@ void reiniciarTelaJogo(ALLEGRO_BITMAP* bg, ALLEGRO_BITMAP* sprite, ALLEGRO_FONT*
     // Limpa a tela e redesenha o fundo
     al_clear_to_color(al_map_rgb(255, 255, 255));
     al_draw_bitmap(bg, 0, 0, 0); // Desenha o fundo
-    al_draw_text(font, al_map_rgb(255, 255, 255), 5, 5, 0, "SCORE: dragão"); // Exibe a pontuação
+    al_flip_display(); // Atualiza a tela
+}
+
+void reiniciarTelaJogo1(ALLEGRO_BITMAP* bg, ALLEGRO_BITMAP* sprite, ALLEGRO_FONT* font, ALLEGRO_DISPLAY* display, int* pos_x, int* pos_y, float* frame) {
+    // Reinicia as variáveis do jogo
+    *pos_x = 880;
+    *pos_y = 50;
+    *frame = 0;
+
+
+    // Limpa a tela e redesenha o fundo
+    al_clear_to_color(al_map_rgb(255, 255, 255));
+    al_draw_bitmap(bg, 0, 0, 0); // Desenha o fundo
     al_flip_display(); // Atualiza a tela
 }
 
@@ -38,7 +60,6 @@ void reiniciarTelaJogo2(ALLEGRO_BITMAP* bg, ALLEGRO_BITMAP* sprite, ALLEGRO_FONT
     // Limpa a tela e redesenha o fundo
     al_clear_to_color(al_map_rgb(255, 255, 255));
     al_draw_bitmap(bg, 0, 0, 0); // Desenha o fundo
-    al_draw_text(font, al_map_rgb(255, 255, 255), 5, 5, 0, "SCORE: dragão"); // Exibe a pontuação
     al_flip_display(); // Atualiza a tela
 }
 
@@ -52,7 +73,6 @@ void reiniciarTelaJogo3(ALLEGRO_BITMAP* bg, ALLEGRO_BITMAP* sprite, ALLEGRO_FONT
     // Limpa a tela e redesenha o fundo
     al_clear_to_color(al_map_rgb(255, 255, 255));
     al_draw_bitmap(bg, 0, 0, 0); // Desenha o fundo
-    al_draw_text(font, al_map_rgb(255, 255, 255), 5, 5, 0, "SCORE: dragão"); // Exibe a pontuação
     al_flip_display(); // Atualiza a tela
 }
 
@@ -78,6 +98,7 @@ int main() {
     ALLEGRO_BITMAP* bg = al_load_bitmap("./bg.png");       // Imagem de fundo
     ALLEGRO_BITMAP* inicial = al_load_bitmap("./inicial.png"); // Imagem da tela inicial
     ALLEGRO_BITMAP* popup_img1 = al_load_bitmap("./pop-up1.png"); // Imagem do pop-up 1
+    ALLEGRO_BITMAP* popup_img11 = al_load_bitmap("./surpresa1.png"); // Imagem do pop-up 1.1
     ALLEGRO_BITMAP* popup_img3 = al_load_bitmap("./pop-up3.png"); // Imagem do pop-up 3
     ALLEGRO_BITMAP* popup_img4 = al_load_bitmap("./pop-up4.png"); // Imagem do pop-up 4
     ALLEGRO_BITMAP* popup_img2 = al_load_bitmap("./pop-up2.png"); // Imagem do pop-up 2
@@ -156,8 +177,12 @@ int main() {
                 }
 
                 // Verifica a posição do personagem para mudar o estado para pop-up
-                if (pos_x == 575 && pos_y == 50) {
+                if (pos_x == 575 && pos_y >= 40 && pos_y <=55) {
                     estadoAtual = TELA_POPUP1; // Muda para o primeiro pop-up
+                }
+
+                if (pos_x == 800 && pos_y >= 40 && pos_y <= 55) {
+                    estadoAtual = TELA_SURPRESA1; // Muda para o primeiro pop-up surpresa
                 }
 
                 if (pos_x >= 290 && pos_x <= 298 && pos_y == 250) {
@@ -172,7 +197,6 @@ int main() {
                 // Limpa a tela e desenha o fundo e o personagem
                 al_clear_to_color(al_map_rgb(255, 255, 255));
                 al_draw_bitmap(bg, 0, 0, 0); // Desenha o fundo
-                al_draw_text(font, al_map_rgb(255, 255, 255), 5, 5, 0, "SCORE: dragão"); // Exibe a pontuação
                 al_draw_bitmap_region(sprite, 48 * (int)frame, current_frame_y, 48, 64, pos_x, pos_y, 0); // Desenha o sprite do personagem
                 al_flip_display(); // Atualiza a tela
             }
@@ -180,7 +204,7 @@ int main() {
         // Lógica para o primeiro pop-up
         else if (estadoAtual == TELA_POPUP1) {
             al_draw_bitmap(bg, 0, 0, 0); // Desenha o fundo
-            al_draw_bitmap(popup_img1, 400, 200, 0); // Desenha o pop-up 1
+            al_draw_bitmap(popup_img1, 2, 360, 0); // Desenha o pop-up 1
             al_flip_display(); // Atualiza a tela
 
             if (event.type == ALLEGRO_EVENT_KEY_DOWN && event.keyboard.keycode == ALLEGRO_KEY_ESCAPE) {
@@ -188,11 +212,22 @@ int main() {
                 estadoAtual = TELA_JOGO;
             }
         }
+        // Lógica para o primeiro pop-up SURPRESA
+        else if (estadoAtual == TELA_SURPRESA1) {
+            al_draw_bitmap(bg, 0, 0, 0); // Desenha o fundo
+            al_draw_bitmap(popup_img11, 2, 360, 0); // Desenha o pop-up 1
+            al_flip_display(); // Atualiza a tela
+
+            if (event.type == ALLEGRO_EVENT_KEY_DOWN && event.keyboard.keycode == ALLEGRO_KEY_ESCAPE) {
+                reiniciarTelaJogo1(bg, sprite, font, display, &pos_x, &pos_y, &frame);
+                estadoAtual = TELA_JOGO;
+            }
+        }
 
         // Lógica para o terceiro pop-up
         else if (estadoAtual == TELA_POPUP3) {
             al_draw_bitmap(bg, 0, 0, 0); // Desenha o fundo
-            al_draw_bitmap(popup_img3, 400, 200, 0); // Desenha o pop-up 3
+            al_draw_bitmap(popup_img3, 2, 360, 0); // Desenha o pop-up 3
             al_flip_display(); // Atualiza a tela
 
             if (event.type == ALLEGRO_EVENT_KEY_DOWN && event.keyboard.keycode == ALLEGRO_KEY_ESCAPE) {
@@ -204,7 +239,7 @@ int main() {
         // Lógica para o quarto pop-up
         else if (estadoAtual == TELA_POPUP4) {
             al_draw_bitmap(bg, 0, 0, 0); // Desenha o fundo
-            al_draw_bitmap(popup_img3, 400, 200, 0); // Desenha o pop-up 3
+            al_draw_bitmap(popup_img4, 2, 360, 0); // Desenha o pop-up 3
             al_flip_display(); // Atualiza a tela
 
             if (event.type == ALLEGRO_EVENT_KEY_DOWN && event.keyboard.keycode == ALLEGRO_KEY_ESCAPE) {
@@ -236,153 +271,199 @@ int main() {
 
     return 0;
 }
-// aqui no meu computador deu tudo certo, como tem vez que dá errado no senac vou deixar minha parte do minigame comentada 
+
+
+
+
+
+//                                                 O CÓDIGO ABAIXO É O MINIGAME QUANDO O PERSONAGEM CHEGAR EM PARIS
+//                                               NÃO CONSEGUI FAZER O CÓDIGO PRINCIPAL CHAMAR ESSE CÓDIGO DO MINIGAME
+
+
+
+
+
+
+//
 //#include <allegro5/allegro.h>
+//#include <allegro5/allegro_primitives.h>
 //#include <allegro5/allegro_font.h>
-//#include <allegro5/allegro_image.h>
-//#include <allegro5/allegro_keyboard.h>
-//#include <stdlib.h>
-//#include <time.h>
+//#include <allegro5/allegro_ttf.h>
 //
-//// Definindo os parâmetros do jogo
-//#define LARGURA_TELA 800
-//#define ALTURA_TELA 600
-//#define SPRITE_LARGURA 64
-//#define SPRITE_ALTURA 64
-//#define VELOCIDADE_CANOS 5
-//#define CANO_LARGURA 80
-//#define ESPACO_ENTRE_CANOS 150
+//#define SCREEN_WIDTH 800
+//#define SCREEN_HEIGHT 600
+//#define PADDLE_WIDTH 170
+//#define PADDLE_HEIGHT 20
+//#define BALL_SIZE 10
+//#define BAR_WIDTH 90
+//#define BAR_HEIGHT 20
+//#define NUM_BARS 20 // Aumentando o número de barras
 //
-//typedef struct {
-//    int x, y;
-//    int largura, altura;
-//} Cano;
+//// Estrutura para as barras
+//typedef struct Bar {
+//    float x, y;
+//    bool active;
+//} Bar;
 //
-//void desenhaCanos(Cano canos[], int quantidade, ALLEGRO_BITMAP* pipe) {
-//    for (int i = 0; i < quantidade; i++) {
-//        al_draw_bitmap(pipe, canos[i].x, canos[i].y, 0);
+//float paddle_x = SCREEN_WIDTH / 2 - PADDLE_WIDTH / 2;
+//float paddle_y = SCREEN_HEIGHT - 50;
+//float ball_x = SCREEN_WIDTH / 2;
+//float ball_y = SCREEN_HEIGHT / 2;
+//float ball_dx = 4.0f;
+//float ball_dy = -4.0f;
+//
+//bool keys[2] = { false, false }; // Left, Right
+//
+//ALLEGRO_DISPLAY* display = NULL;
+//ALLEGRO_EVENT_QUEUE* event_queue = NULL;
+//ALLEGRO_TIMER* timer = NULL;
+//ALLEGRO_FONT* font = NULL;
+//
+//// Declarando as barras como um array fixo
+//Bar bars[NUM_BARS];
+//
+//void initialize() {
+//    al_init();
+//    al_init_primitives_addon();
+//    al_init_font_addon();
+//    al_init_ttf_addon();
+//    al_install_keyboard();
+//
+//    display = al_create_display(SCREEN_WIDTH, SCREEN_HEIGHT);
+//    event_queue = al_create_event_queue();
+//    timer = al_create_timer(1.0 / 60.0); // 60 FPS
+//
+//    al_register_event_source(event_queue, al_get_display_event_source(display));
+//    al_register_event_source(event_queue, al_get_keyboard_event_source());
+//    al_register_event_source(event_queue, al_get_timer_event_source(timer));
+//
+//    font = al_create_builtin_font();
+//
+//    // Criar as barras no topo, distribuindo em várias linhas
+//    int bars_per_row = SCREEN_WIDTH / (BAR_WIDTH + 10);  // Quantas barras cabem por linha
+//    int current_row = 0;
+//
+//    for (int i = 0; i < NUM_BARS; i++) {
+//        // Calcular a posição horizontal e vertical para as barras
+//        bars[i].x = (i % bars_per_row) * (BAR_WIDTH + 10);  // Posição horizontal
+//        bars[i].y = 50 + current_row * (BAR_HEIGHT + 5);    // Posição vertical
+//        bars[i].active = true;                               // Barra ativa
+//
+//        // Mudar para a próxima linha quando atingir o final da linha
+//        if ((i + 1) % bars_per_row == 0) {
+//            current_row++;
+//        }
 //    }
+//
+//    al_start_timer(timer);
 //}
 //
-//void moveCanos(Cano canos[], int quantidade) {
-//    for (int i = 0; i < quantidade; i++) {
-//        canos[i].x -= VELOCIDADE_CANOS;  // Move os canos para a esquerda
-//        if (canos[i].x + CANO_LARGURA < 0) {
-//            canos[i].x = LARGURA_TELA;
-//            canos[i].y = rand() % (ALTURA_TELA - ESPACO_ENTRE_CANOS);  // Altera a altura do cano
+//void draw_game() {
+//    al_clear_to_color(al_map_rgb(0, 0, 0)); // Cor de fundo
+//
+//    // Desenhar o paddle
+//    al_draw_filled_rectangle(paddle_x, paddle_y, paddle_x + PADDLE_WIDTH, paddle_y + PADDLE_HEIGHT, al_map_rgb(255, 0, 0));
+//
+//    // Desenhar a bola
+//    al_draw_filled_circle(ball_x, ball_y, BALL_SIZE, al_map_rgb(0, 255, 0));
+//
+//    // Desenhar as barras
+//    for (int i = 0; i < NUM_BARS; i++) {
+//        if (bars[i].active) {
+//            al_draw_filled_rectangle(bars[i].x, bars[i].y, bars[i].x + BAR_WIDTH, bars[i].y + BAR_HEIGHT, al_map_rgb(0, 0, 255));
 //        }
 //    }
+//
+//    al_flip_display();
 //}
 //
-//bool checaColisao(int pos_x, int pos_y, Cano canos[], int quantidade) {
-//    for (int i = 0; i < quantidade; i++) {
-//        if (pos_x + SPRITE_LARGURA > canos[i].x && pos_x < canos[i].x + CANO_LARGURA) {
-//            if (pos_y < canos[i].y || pos_y + SPRITE_ALTURA > canos[i].y + ESPACO_ENTRE_CANOS) {
-//                return true;  // Colisão detectada
-//            }
-//        }
-//    }
-//    return false;
-//}
+//void update_game() {
+//    // Movimentação do paddle
+//    if (keys[0] && paddle_x > 0) paddle_x -= 5.0f;
+//    if (keys[1] && paddle_x < SCREEN_WIDTH - PADDLE_WIDTH) paddle_x += 5.0f;
 //
-//void telaFlappy(ALLEGRO_DISPLAY* display, ALLEGRO_FONT* font, ALLEGRO_BITMAP* bg, ALLEGRO_BITMAP* sprite, ALLEGRO_BITMAP* pipe) {
-//    int pos_x = 300, pos_y = 315;  // Posição inicial do personagem
-//    int score = 0;  // Pontuação do jogador
-//    bool jogoAtivo = true;
-//    ALLEGRO_KEYBOARD_STATE keyState;
+//    // Movimentação da bola
+//    ball_x += ball_dx;
+//    ball_y += ball_dy;
 //
-//    // Inicializa os canos
-//    Cano canos[3];
-//    for (int i = 0; i < 3; i++) {
-//        canos[i].x = LARGURA_TELA + i * (LARGURA_TELA / 2);  // Inicializa os canos fora da tela
-//        canos[i].y = rand() % (ALTURA_TELA - ESPACO_ENTRE_CANOS);  // Altura aleatória dos canos
-//        canos[i].largura = CANO_LARGURA;
-//        canos[i].altura = ALTURA_TELA;
+//    // Colisão da bola com as paredes
+//    if (ball_x - BALL_SIZE < 0 || ball_x + BALL_SIZE > SCREEN_WIDTH) ball_dx = -ball_dx;
+//    if (ball_y - BALL_SIZE < 0) ball_dy = -ball_dy;
+//
+//    // Colisão da bola com o paddle
+//    if (ball_y + BALL_SIZE >= paddle_y && ball_x >= paddle_x && ball_x <= paddle_x + PADDLE_WIDTH) {
+//        ball_dy = -ball_dy;
+//        ball_y = paddle_y - BALL_SIZE; // Evita que a bola fique presa no paddle
 //    }
 //
-//    // Loop do mini-game
-//    while (jogoAtivo) {
-//        al_get_keyboard_state(&keyState);
+//    // Colisão da bola com as barras
+//    for (int i = 0; i < NUM_BARS; i++) {
+//        if (bars[i].active && ball_y - BALL_SIZE <= bars[i].y + BAR_HEIGHT && ball_x >= bars[i].x && ball_x <= bars[i].x + BAR_WIDTH) {
+//            bars[i].active = false;  // Desativa a barra
+//            ball_dy = -ball_dy;  // A bola rebate
 //
-//        // Verificar se o jogador pressionou ESC para sair do mini-game
-//        if (al_key_down(&keyState, ALLEGRO_KEY_ESCAPE)) {
-//            jogoAtivo = false;
+//            // Acelerar a bola
+//            ball_dx *= 1.05f;  // Aumenta a velocidade horizontal
+//            ball_dy *= 1.05f;  // Aumenta a velocidade vertical
 //        }
+//    }
 //
-//        // Movimentação do personagem (subir/descer)
-//        if (al_key_down(&keyState, ALLEGRO_KEY_UP)) {
-//            pos_y -= 2;  // Move para cima
+//    // Verificar se todas as barras foram destruídas
+//    bool all_bars_destroyed = true;
+//    for (int i = 0; i < NUM_BARS; i++) {
+//        if (bars[i].active) {
+//            all_bars_destroyed = false;
+//            break;
 //        }
-//        if (al_key_down(&keyState, ALLEGRO_KEY_DOWN)) {
-//            pos_y += 2;  // Move para baixo
-//        }
+//    }
 //
-//        // Garantir que o personagem não saia da tela
-//        if (pos_y < 0) {
-//            pos_y = 0;
-//        }
-//        else if (pos_y + SPRITE_ALTURA > ALTURA_TELA) {
-//            pos_y = ALTURA_TELA - SPRITE_ALTURA;
-//        }
+//    if (all_bars_destroyed) {
+//        al_draw_text(font, al_map_rgb(255, 255, 255), SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, ALLEGRO_ALIGN_CENTRE, "You Win!");
+//        al_flip_display();
+//        al_rest(2.0); // Pausa de 2 segundos para mostrar a mensagem
+//        exit(0); // Encerra o jogo
+//    }
 //
-//        // Movimenta os canos
-//        moveCanos(canos, 3);
-//
-//        // Verifica colisões
-//        if (checaColisao(pos_x, pos_y, canos, 3)) {
-//            jogoAtivo = false;  // Fim de jogo
-//        }
-//
-//        // Limpeza da tela e desenho dos elementos
-//        al_clear_to_color(al_map_rgb(135, 206, 235)); // Fundo azul (céu)
-//        al_draw_bitmap(bg, 0, 0, 0);  // Desenha o fundo
-//        al_draw_bitmap_region(sprite, 0, 0, SPRITE_LARGURA, SPRITE_ALTURA, pos_x, pos_y, 0);  // Desenha o personagem
-//        desenhaCanos(canos, 3, pipe);  // Desenha os canos
-//
-//        // Exibe a pontuação
-//        char scoreText[20];
-//        sprintf(scoreText, "Score: %d", score);
-//        al_draw_text(font, al_map_rgb(255, 255, 255), 10, 10, 0, scoreText);
-//
-//        al_flip_display();  // Atualiza a tela
-//
-//        // Aumenta a pontuação conforme o tempo
-//        score++;
-//
-//        // Aguarda um tempo para dar o efeito de FPS (40 FPS)
-//        al_rest(0.025);
+//    // Caso a bola perca o paddle
+//    if (ball_y > SCREEN_HEIGHT) {
+//        // Game Over
+//        al_draw_textf(font, al_map_rgb(255, 255, 255), SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, ALLEGRO_ALIGN_CENTRE, "Game Over!");
+//        al_flip_display();
+//        al_rest(2.0);
+//        exit(0); // Encerra o jogo
 //    }
 //}
 //
 //int main() {
-//    // Inicializações
-//    al_init();
-//    al_init_font_addon();
-//    al_init_image_addon();
-//    al_install_keyboard();
+//    initialize();
 //
-//    ALLEGRO_DISPLAY* display = al_create_display(LARGURA_TELA, ALTURA_TELA);
-//    al_set_window_title(display, "Mini-Game Flappy");
+//    while (true) {
+//        ALLEGRO_EVENT event;
+//        al_wait_for_event(event_queue, &event);
 //
-//    ALLEGRO_FONT* font = al_create_builtin_font();
-//    ALLEGRO_BITMAP* sprite = al_load_bitmap("./flappy_bird.png"); // Sprite do personagem
-//    ALLEGRO_BITMAP* bg = al_load_bitmap("./background.png");       // Imagem de fundo
-//    ALLEGRO_BITMAP* pipe = al_load_bitmap("./pipe.png");           // Imagem do cano
+//        if (event.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
+//            break;
 //
-//    if (!sprite || !bg || !pipe) {
-//        printf("Erro ao carregar as imagens!\n");
-//        return -1;
+//        if (event.type == ALLEGRO_EVENT_KEY_DOWN) {
+//            if (event.keyboard.keycode == ALLEGRO_KEY_LEFT) keys[0] = true;
+//            if (event.keyboard.keycode == ALLEGRO_KEY_RIGHT) keys[1] = true;
+//        }
+//
+//        if (event.type == ALLEGRO_EVENT_KEY_UP) {
+//            if (event.keyboard.keycode == ALLEGRO_KEY_LEFT) keys[0] = false;
+//            if (event.keyboard.keycode == ALLEGRO_KEY_RIGHT) keys[1] = false;
+//        }
+//
+//        if (event.type == ALLEGRO_EVENT_TIMER) {
+//            update_game();
+//            draw_game();
+//        }
 //    }
 //
-//    // Chama o mini-game
-//    telaFlappy(display, font, bg, sprite, pipe);
-//
-//    // Libera recursos
-//    al_destroy_bitmap(sprite);
-//    al_destroy_bitmap(bg);
-//    al_destroy_bitmap(pipe);
-//    al_destroy_font(font);
 //    al_destroy_display(display);
+//    al_destroy_event_queue(event_queue);
+//    al_destroy_timer(timer);
+//    al_destroy_font(font);
 //
 //    return 0;
 //}

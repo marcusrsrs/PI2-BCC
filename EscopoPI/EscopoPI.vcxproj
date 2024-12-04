@@ -147,13 +147,19 @@
     <ClCompile Include="main.c" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="background.png" />
     <Image Include="bg.png" />
+    <Image Include="flappy.png" />
     <Image Include="inicial.png" />
     <Image Include="MEN.png" />
+    <Image Include="pipe.png" />
     <Image Include="pop-up1.png" />
     <Image Include="pop-up2.png" />
     <Image Include="pop-up3.png" />
     <Image Include="pop-up4.png" />
+    <Image Include="princesa.png" />
+    <Image Include="rei.png" />
+    <Image Include="surpresa1.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
